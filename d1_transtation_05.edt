@@ -1,0 +1,221 @@
+"d1_trainstation_05"
+{
+	"console"
+	{
+		// not needed - flashlights don't work without a suit
+		//"mp_flashlight"		"0"
+	}
+
+	"entity"
+	{
+		// Fix Breen teleport04 and teleport05a scenes
+		//edit { "targetname" "teleport_04a_scene" values { "SceneFile" "scenes/new/k_lab/teleport04a.vcd" } }
+		create { classname logic_auto
+			values { spawnflags 1
+
+				// Use this one WITHOUT the modified teleport04.vcd
+				//OnMapSpawn "teleport_04_scene,AddOutput,OnStart BREEN_idle_prepose_ss_1:CancelSequence::0.02:-1,0,-1"
+
+				// Use this one WITH the modified teleport04.vcd
+				OnMapSpawn "teleport_04_scene,AddOutput,OnStart BREEN_idle_prepose_ss_1:CancelSequence::1:-1,0,-1"
+			}
+		}
+
+		// no weapons
+		"create"
+		{
+			"classname"	"info_player_equip"
+			"origin"	"0 0 0"
+		}
+
+		// create some extra spawn locations
+		"create" { "classname" "info_player_coop" "origin" "-5800.000000 -680.000000 64" "values" { "angles" "0 -140 0" } }
+
+		// remove some props in the way for spawn locations
+		"delete" { "classname" "prop_physics" "origin" "-5964.00 -656.00 64.28" }
+		"delete" { "classname" "prop_physics" "origin" "-5996.00 -660.00 64.28" }
+		"delete" { "classname" "prop_physics" "origin" "-5731.85 -721.86 108.59" }
+		"delete" { "classname" "prop_physics" "origin" "-5731.85 -669.86 108.59" }
+
+		// fix the soda machine door
+		"edit" { "targetname" "soda_door_areaportal_1" "values" { "targetname" "soda_door_areaportal_1__disabled" } }
+		"delete" { "targetname" "Alyx_lab_entry_closedoor_1" }
+		"delete" { "targetname" "brush_soda_clip_player" }
+		"delete" { "targetname" "brush_soda_clip_player_2" }
+
+		// fix lab door
+		"delete" { "targetname" "start_first_teleport_01" }
+		"delete" { "targetname" "teleport_01b_scene" }
+		"delete" { "targetname" "lab_door_clip" }
+
+		"create"
+		{
+			"origin" "-7220 -1312 56"
+			"classname" "trigger_once"
+
+			"values"
+			{
+				"model" "*15"
+				"targetname" "start_first_teleport_01"
+				"spawnflags" "1"
+				"StartDisabled" "1"
+				"OnTrigger" "sounds_lab_1,StopSound,,0,-1"
+				"OnTrigger" "destination_monitor_static_1,Disable,,14,-1"
+				"OnTrigger" "destination_monitor_static_1,Enable,,12,-1"
+				"OnTrigger" "destination_monitor_static_1,Disable,,6.5,-1"
+				"OnTrigger" "destination_monitor_static_1,Enable,,5,-1"
+				"OnTrigger" "BarneyTPnag_Loop_Barney01_lcs,Kill,,2,-1"
+				"OnTrigger" "KleinerTPnag_Loop_Kleiner01_lcs,Kill,,2,-1"
+			//	"OnTrigger" "lab_door_clip,Close,,0,-1"
+				"OnTrigger" "teleport_01_scene,Start,,2,1"
+				"OnTrigger" "destination_monitor_1,Enable,,6,-1"
+				"OnTrigger" "Surveillance_monitor_1,Disable,,0,-1"
+				"OnTrigger" "portroom_speaker,Kill,,0,-1"
+			//	"OnTrigger" "lab_door,Close,,0,-1"
+				"OnTrigger" "sounds_lab_1,Kill,,0.1,-1"
+			}
+		}
+
+		"create"
+		{
+			"classname" "logic_choreographed_scene"
+			"origin" "-7296 -1336 244"
+
+			"values"
+			{
+				"busyactor" "1"
+				"targetname" "teleport_01b_scene"
+				"SceneFile" "scenes/k_lab/teleport01b.vcd"
+				"OnCompletion" "tport_switch_cover_1,Open,,3,-1"
+			//	"OnStart" "lab_door,Close,,0,-1"
+				"OnCompletion" "switchnag_speaker,TurnOn,,1,1"
+				"OnStart" "lab_door_clip,Close,,0,-1"
+			}
+		}
+
+		// remove the props near next level transition for spawn area
+		"delete" { "classname" "prop_physics" "origin" "-10660.00 -3940.00 363.00" }
+		"delete" { "classname" "prop_physics" "origin" "-10657.00 -3822.00 349.18" }
+		"delete" { "classname" "prop_physics" "origin" "-10654.00 -3818.00 325.00" }
+		"delete" { "classname" "prop_physics" "origin" "-10672.00 -3726.00 355.15" }
+
+		// TODO: Fix teleport scene
+		//// Is this still relevant? -4lt
+		// create a checkpoint to get players unstuck
+		//// now to be done with the new and improved spawn manager!
+
+		"delete" { "targetname" "player_in_teleport" }
+		"create"
+		{
+			"classname" "trigger_once"
+			"origin" "-7186.95 -1166 24"
+			"values"
+			{
+				"model" "*55"
+				"targetname" "player_in_teleport"
+				"spawnflags" "1"
+				"StartDisabled" "1"
+				"OnTrigger" "kleiner_teleport_player_starter_1,Trigger,,0,-1"
+				"OnTrigger" "tportnag_speaker,Kill,,0,-1"
+
+				// activate the checkpoint with a huge delay lol
+				"OnTrigger" "edt_spawns,SetCheckpoint,edt_spawn2,83,-1"
+				"OnTrigger" "edt_spawns,MovePlayers,,83.1,-1"
+			}
+		}
+
+		create
+		{
+			classname	"info_spawn_manager"
+			origin		"0 0 0"
+
+			values
+			{
+				targetname	"edt_spawns"
+			}
+		}
+
+		"create"
+		{
+			"classname" "info_player_coop"
+		//	"origin" "-10297.17 -4768.40 196.64"
+			"origin" "-10336.3 -4707.12 322"
+
+			"values"
+			{
+				"targetname"	"edt_spawn2"
+				"angles"	"0 101 0"
+				"StartDisabled"	"1"
+			}
+		}
+
+		// make sure every player gets a suit somehow
+		// and enable flashlight
+
+		"create"
+		{
+			"classname"	"logic_auto"
+			"origin"	"0 0 0"
+
+			"values"
+			{
+				"OnMapSpawn"	"item_suit,AddOutput,OnPlayerTouch edt_suit_equip:Enable::0:0,0,0"
+				"OnMapSpawn"	"item_suit,AddOutput,OnPlayerTouch edt_suit_template:ForceSpawn::0:0,0,0"
+
+				// not needed - flashlights don't work without a suit
+				//"OnMapSpawn"	"item_suit,AddOutput,OnPlayerTouch edt_server:Command:mp_flashlight 1:0:0,0,0"
+			}
+		}
+
+		"create"
+		{
+			"classname"	"point_template"
+			"origin"	"0 0 0"
+
+			"values"
+			{
+				"targetname"	"edt_suit_template"
+				"Template01"	"edt_suit"
+			}
+		}
+
+		"create"
+		{
+			"classname"	"item_suit"
+			"origin"	"-6484.32 -1624.57 8.05"
+
+			"values"
+			{
+				"targetname"	"edt_suit"
+				"angles"	"0 90 0"
+
+				"OnPlayerTouch"	"edt_suit_template,ForceSpawn,,0,0"
+			}
+		}
+
+		"create"
+		{
+			"classname"	"info_player_equip"
+			"origin"	"0 0 0"
+
+			"values"
+			{
+				"targetname"	"edt_suit_equip"
+				"item_suit"	"1"
+				"StartDisabled"	"1"
+			}
+		}
+
+		// not needed
+		//"create"
+		//{
+		//	"classname"	"point_servercommand"
+		//	"origin"	"0 0 0"
+
+		//	"values"
+		//	{
+		//		"targetname"	"edt_server"
+		//	}
+		//}
+	}
+}
